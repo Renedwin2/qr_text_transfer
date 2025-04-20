@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>QR Text Receiver</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    h1 {
+      color: #333;
+    }
+    #qr {
+      margin: 20px 0;
+      border: 10px solid white;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      margin-top: 40px;
+      color: #555;
+    }
+    #output {
+      padding: 20px;
+      font-size: 1.2em;
+      color: #1a73e8;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      max-width: 600px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Scan this QR code</h1>
+  <canvas id="qr"></canvas>
+  <h2>Received Text:</h2>
+  <div id="output">Waiting...</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/socket.io/client-dist/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script>
+    const sessionId = "{{ session_id }}";
+    const socket = io();
+    socket.emit('join', { session_id: sessionId });
+
+    socket.on('receive_text', function(data) {
+      document.getElementById('output').innerText = data.text;
+    });
+
+    QRCode.toCanvas(document.getElementById('qr'), window.location.origin + '/phone/' + sessionId);
+  </script>
+</body>
+</html>
